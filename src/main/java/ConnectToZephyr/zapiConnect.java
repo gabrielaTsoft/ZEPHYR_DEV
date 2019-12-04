@@ -88,6 +88,13 @@ public class zapiConnect {
         return idProyecto;
     }
 
+    /**
+     * Permite obtener la versión del proyecto (Released o Unreleased, dentro de Unreleased: Unscheduled, versión 2.0, versión 3.0, etc)
+     * Utiliza método GET /rest/zapi/latest/util/versionBoard-list?projectId={idProyecto}
+     *
+     * @param idProyecto Debe recibir como parámetro el ID del Proyecto
+     * @return el campo "value" del array "unreleasedVersions"
+     */
     public static String returnVersionIDJira(String idProyecto) {
 
         String versionID = null, strJSON;
@@ -105,7 +112,6 @@ public class zapiConnect {
                 JSONObject json = new JSONObject(strJSON);
                 if(!strJSON.contains("Versión")) {
                     versionID = "-1";
-                    System.out.println(versionID);
                 }else {
                     versionID = json.getJSONArray("unreleasedVersions").getJSONObject(1).get("value").toString();
                     System.out.println(versionID);
