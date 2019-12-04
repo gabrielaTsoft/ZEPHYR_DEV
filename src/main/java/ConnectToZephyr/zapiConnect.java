@@ -22,11 +22,11 @@ import java.util.logging.Logger;
 public class zapiConnect {
 
     private static final Logger LOGGER = Logger.getLogger(String.valueOf(zapiConnect.class));
-    public static String urlBaseJIRA;
+    public static String urlBaseJIRA = PropertiesManager.getDatoProperties("URL_JIRA_FIF");
     public static Client clientJIRA;
 
     /**
-     * Clase que permite crear un cliente que se conecta a JIRA
+     * Permite crear un cliente que se conecta a JIRA
      *
      * @return Objeto del tipo Client, que posee la conexión a JIRA con sus credenciales
      */
@@ -44,7 +44,6 @@ public class zapiConnect {
 
                 clientJIRA = ClientBuilder.newClient();
                 clientJIRA.register(feature);
-                urlBaseJIRA = PropertiesManager.getDatoProperties("URL_JIRA_FIF");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -79,6 +78,8 @@ public class zapiConnect {
                 JSONObject json = new JSONObject(strJSON);
                 idProyecto = json.get("id").toString();
                 System.out.println("Id del proyecto --> " + idProyecto);
+            } else {
+                LOGGER.warning("La respuesta del servidor es --> " + response.getStatus());
             }
         } catch (Exception e){
             System.out.println(e.getMessage());

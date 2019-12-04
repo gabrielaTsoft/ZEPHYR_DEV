@@ -6,7 +6,7 @@ public class mainTest {
     public static void main (String[] args) {
         zapiConnect.returnVersionIDJira(
                 zapiConnect.returnIDJiraProyect(
-                        PropertiesManager.getDatoProperties("KEY_PROYECT_FIF")))
+                        PropertiesManager.getDatoProperties("KEY_PROJECT_FIF")))
         ;
     }
 }
