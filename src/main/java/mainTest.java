@@ -4,6 +4,9 @@ import Utils.PropertiesManager;
 public class mainTest {
 
     public static void main (String[] args) {
-        zapiConnect.returnIDJiraProyect(PropertiesManager.getDatoProperties("KEY_PROYECT_FIF"));
+        zapiConnect.returnVersionIDJira(
+                zapiConnect.returnIDJiraProyect(
+                        PropertiesManager.getDatoProperties("KEY_PROYECT_FIF")))
+        ;
     }
 }

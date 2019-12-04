@@ -104,6 +104,7 @@ public class zapiConnect {
                 JSONObject json = new JSONObject(strJSON);
                 if(!strJSON.contains("Versión")) {
                     versionID = "-1";
+                    System.out.println(versionID);
                 }else {
                     versionID = json.getJSONArray("unreleasedVersions").getJSONObject(1).get("value").toString();
                     System.out.println(versionID);
@@ -114,7 +115,9 @@ public class zapiConnect {
 
         }catch(Exception e) {
             System.out.println(e.getMessage());
+            System.out.println(versionID);
         }
+        System.out.println(versionID);
         return versionID;
     }
 

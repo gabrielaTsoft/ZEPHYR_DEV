@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe58ded4-e72c-4496-8295-5ad7aa603d3c" name="Default Changelist" comment="" />
+    <list default="true" id="fe58ded4-e72c-4496-8295-5ad7aa603d3c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ConnectToZephyr/zapiConnect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ConnectToZephyr/zapiConnect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/datosSAT.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/datosSAT.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/ConnectToZephyr/zapiConnect.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Utils/PropertiesManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/datosSAT.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/mainTest.class" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +24,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
       <MavenImportingSettings>
@@ -22,6 +35,7 @@
     </option>
   </component>
   <component name="ProjectId" id="1UWXCqUOd3c0D9QIPIpECNl1mxd" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -29,6 +43,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$/Desktop/atlassianlabs-atlassian-oauth-examples-dd0264cad043/java" />
@@ -76,7 +91,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1575473199929</updated>
-      <workItem from="1575473203935" duration="12573000" />
+      <workItem from="1575473203935" duration="12990000" />
     </task>
     <servers />
   </component>
@@ -88,25 +103,25 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="739" y="273" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575487485869" />
-    <state width="1875" height="199" key="GridCell.Tab.0.bottom" timestamp="1575495343199">
+    <state width="1875" height="199" key="GridCell.Tab.0.bottom" timestamp="1575495634263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1875" height="199" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495343199" />
+    <state width="1875" height="199" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495634263" />
     <state width="1235" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1280.680@1920.0.1280.680" timestamp="1575480755423" />
-    <state width="1875" height="199" key="GridCell.Tab.0.center" timestamp="1575495343199">
+    <state width="1875" height="199" key="GridCell.Tab.0.center" timestamp="1575495634262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1875" height="199" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495343199" />
+    <state width="1875" height="199" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495634262" />
     <state width="1235" height="272" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1280.680@1920.0.1280.680" timestamp="1575480755422" />
-    <state width="1875" height="199" key="GridCell.Tab.0.left" timestamp="1575495343199">
+    <state width="1875" height="199" key="GridCell.Tab.0.left" timestamp="1575495634262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1875" height="199" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495343199" />
+    <state width="1875" height="199" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495634262" />
     <state width="1235" height="272" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1280.680@1920.0.1280.680" timestamp="1575480755422" />
-    <state width="1875" height="199" key="GridCell.Tab.0.right" timestamp="1575495343199">
+    <state width="1875" height="199" key="GridCell.Tab.0.right" timestamp="1575495634262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1875" height="199" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495343199" />
+    <state width="1875" height="199" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1280.680@0.0.1920.1040" timestamp="1575495634262" />
     <state width="1235" height="272" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1280.680@1920.0.1280.680" timestamp="1575480755422" />
     <state width="1875" height="347" key="GridCell.Tab.1.bottom" timestamp="1575491985221">
       <screen x="0" y="0" width="1920" height="1040" />
