@@ -95,13 +95,14 @@ public class zapiConnect {
      * @param idProyecto Debe recibir como parámetro el ID del Proyecto
      * @return el campo "value" del array "unreleasedVersions"
      */
-    public static String GetVersionIDJira(String idProyecto) {
+    public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRelease) {
 
-        String versionID = null, strJSON;
+        String releaseOrUnrelease;
+        String versionID = "";
+        String strJSON = "";
         Response response;
 
         try {
-
             response = zapiConnect.getClientJIRA().target(
                     urlBaseJIRA + "/rest/zapi/latest/util/versionBoard-list?projectId=" + idProyecto)
                     .request(MediaType.APPLICATION_JSON_TYPE)
@@ -111,14 +112,17 @@ public class zapiConnect {
 
             if(response.getStatus() == 200) {
                 JSONObject json = new JSONObject(strJSON);
-                // TODO Realizar análisis exahustivo de este método, ya que siempre da -1
-                //  y siempre se encapsula en UnreleasedVersions,
-                //  y como da -1 siempre cae en carpeta Unscheduled (sin programar)
+                JSONArray unreleasedVersions = json.getJSONArray("unreleasedVersions");
 
-                if(!strJSON.contains("Versión")) {
-                    versionID = "-1";
-                }else {
-                    versionID = json.getJSONArray("unreleasedVersions").getJSONObject(1).get("value").toString();
+                for(int i = 0; i < unreleasedVersions.length(); i++) {
+                    System.out.println(json.getJSONArray("unreleasedVersions").getJSONObject(i).get("label").toString());
+
+                    // TODO --> No está funcionado este if
+                    if(json.getJSONArray("unreleasedVersions").getJSONObject(i).get("label").toString().contains(nombreRelease)){
+                        System.out.println("hola");
+                    } else {
+                        System.out.println("chao");
+                    }
                 }
             }else {
                 System.out.println("No se ha encontrado la versión del proyecto id: " + idProyecto);
