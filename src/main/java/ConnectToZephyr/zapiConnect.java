@@ -81,11 +81,13 @@ public class zapiConnect {
     }
 
     /**
-     * Permite obtener la versión del proyecto (Released o Unreleased, dentro de Unreleased: Unscheduled, versión 2.0, versión 3.0, etc)
-     * Utiliza método GET /rest/zapi/latest/util/versionBoard-list?projectId={idProyecto}
+     * Permite obtener el Id del release en el cual están hechas las pruebas --> Puede ser release o Unreleased
+     * y dentro de Release o Unreleased el nombre del Release
      *
-     * @param idProyecto Debe recibir como parámetro el ID del Proyecto
-     * @return el campo "value" del array "unreleasedVersions"
+     * @param idProyecto Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
+     * @param ISRelease Hay que entregarle por parámetro si pertenece a Release o Unrelease, si es Release --> true, sino false
+     * @param nombreRelease Hay que proporcionarle el nombre del Release en el cual está creado el ciclo de pruebas
+     * @return versionID, el cual es el valor o ID asociado al proyecto creado
      */
     public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRelease) {
 
@@ -106,7 +108,7 @@ public class zapiConnect {
 
                 if (ISRelease){
                     JSONArray releasedVersions = json.getJSONArray("releasedVersions");
-                    System.out.println(releasedVersions);
+                    //System.out.println(releasedVersions);
 
                     for (int i = 0; i < releasedVersions.length(); i++){
                         String contenidoUnrelease = releasedVersions.getJSONObject(i).get("label").toString().trim();
@@ -123,7 +125,7 @@ public class zapiConnect {
 
                     for (int i = 0; i < unreleasedVersions.length(); i++){
                         String contenidoUnrelease = unreleasedVersions.getJSONObject(i).get("label").toString().trim();
-                        System.out.println(contenidoUnrelease);
+                        //System.out.println(contenidoUnrelease);
 
                         if (contenidoUnrelease.contains(nombreRelease)){
                             versionID = unreleasedVersions.getJSONObject(i).get("value").toString().trim();
@@ -135,7 +137,6 @@ public class zapiConnect {
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
-
         System.out.println("La versión es --> "+ versionID);
         return versionID;
     }
