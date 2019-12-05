@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  * Clase que permite interactuar con la API de Zephyr(ZAPI) y con la API de JIRA 8.5.0
- * @author Alejandro Contreras
+ * @author Alejandro Contreras (Adaptación de trabajo realizado por Hector Castillo)
  * @Date 04/12/2019
  * @version 1.0
  */
@@ -59,7 +59,7 @@ public class zapiConnect {
      * @param claveProyectoEnJira Hay que pasarle por parámetro la Clave del proyecto en JIRA
      * @return Devuelve el ID del proyecto en JIRA (el cual es distinto a la KEY del proyecto)
      */
-    public static String returnIDJiraProyect(String claveProyectoEnJira) {
+    public static String GetIDJiraProyect(String claveProyectoEnJira) {
 
         String idProyecto = "";
         String strJSON = "";
@@ -95,12 +95,13 @@ public class zapiConnect {
      * @param idProyecto Debe recibir como parámetro el ID del Proyecto
      * @return el campo "value" del array "unreleasedVersions"
      */
-    public static String returnVersionIDJira(String idProyecto) {
+    public static String GetVersionIDJira(String idProyecto) {
 
         String versionID = null, strJSON;
         Response response;
 
         try {
+
             response = zapiConnect.getClientJIRA().target(
                     urlBaseJIRA + "/rest/zapi/latest/util/versionBoard-list?projectId=" + idProyecto)
                     .request(MediaType.APPLICATION_JSON_TYPE)
@@ -110,26 +111,37 @@ public class zapiConnect {
 
             if(response.getStatus() == 200) {
                 JSONObject json = new JSONObject(strJSON);
+                // TODO Realizar análisis exahustivo de este método, ya que siempre da -1
+                //  y siempre se encapsula en UnreleasedVersions,
+                //  y como da -1 siempre cae en carpeta Unscheduled (sin programar)
+
                 if(!strJSON.contains("Versión")) {
                     versionID = "-1";
                 }else {
                     versionID = json.getJSONArray("unreleasedVersions").getJSONObject(1).get("value").toString();
-                    System.out.println(versionID);
                 }
             }else {
                 System.out.println("No se ha encontrado la versión del proyecto id: " + idProyecto);
             }
-
         }catch(Exception e) {
             System.out.println(e.getMessage());
-            System.out.println(versionID);
         }
+
         System.out.println(versionID);
         return versionID;
     }
 
-    public static String returnCycleIDJira(String idProyecto, String nomCiclo, String version) {
-
+    /**
+     * Método que permite obtener el Id del Diclo de JIRA que se esta invocando, pasándole por parámetro en nombre del Ciclo que ta está creado en Zephyr
+     *
+     * @param idProyecto Este se obtiene gracias al método GetIDJiraProyect
+     * @param nomCiclo Este se pasa por parámetro como properties, sabiendo de antemano el nombre del ciclo creado,
+     *                 pero este ciclo debe estar contenido en "unreleasedVersions", específicamente en (Unscheduled/Sin programar)
+     *                 // TODO Este método debe ser refactorizado junto al método GetVersionIDJira, ya que dicho método sólo toma el id -1, el cual corresponde a "unreleasedVersions", específicamente en (Unscheduled/Sin programar)
+     * @param version Este se obtiene gracias al método GetVersionIDJira
+     * @return el Id del Ciclo ingresado por properties
+     */
+    public static String GetCycleIDJira(String idProyecto, String nomCiclo, String version) {
         String idCiclo = "";
         Response response;
 
@@ -142,20 +154,23 @@ public class zapiConnect {
             String strJSON = response.readEntity(String.class);
 
             if(response.getStatus() == 200) {
-
                 JSONObject json = new JSONObject(strJSON);
-                JSONArray names = json.names();
+                JSONArray ArrayConIdsDeCiclo = json.names();
+                System.out.println(ArrayConIdsDeCiclo);
 
                 ObjectMapper mapper = new ObjectMapper();
 
-                //Realizar un for para recorrer al usuario asignado
-                for(int i = 0; i < names.length(); i++) {
-                    if(!names.getString(i).equals("recordsCount")) {
+                // Recorro los Ids de Ciclo de los ciclos "unreleasedVersions", ya que el parámetro ingresado fue -1 (Unscheduled / Sin programar)
+                // Si le ingresaramos otro valor del version, recorrería los otros ciclos.
+                for(int i = 0; i < ArrayConIdsDeCiclo.length(); i++) {
+                    if(!ArrayConIdsDeCiclo.getString(i).equals("recordsCount")) {
 
-                        JsonNode node = mapper.readTree(strJSON).path(names.getString(i));
-                        System.out.println(node.get("name").toString());
+                        JsonNode node = mapper.readTree(strJSON).path(ArrayConIdsDeCiclo.getString(i));
+
+                        // node.get("name").toString().replaceAll("\"", "")  --> devuelve el nombre del ciclo
+                        // Si el nombre del ciclo, coincide con el nombre del ciclo pasado por parámetro, entonces se asigna el id del ciclo que contiene ese nombre en su interior
                         if(node.get("name").toString().replaceAll("\"", "").contains(nomCiclo)) {
-                            idCiclo = names.getString(i);
+                            idCiclo = ArrayConIdsDeCiclo.getString(i);
                             break;
                         }
                     }
@@ -166,6 +181,7 @@ public class zapiConnect {
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
+        System.out.println("Id de ciclo es --> "+ idCiclo + ", el cual se corresponde con el ciclo con nombre de ciclo --> " + nomCiclo);
         return idCiclo;
     }
 }
