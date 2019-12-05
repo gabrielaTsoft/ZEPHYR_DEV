@@ -68,7 +68,6 @@ public class zapiConnect {
             strJSON = response.readEntity(String.class);
 
             if (response.getStatus() == 200) {
-                System.out.println("Respuesta de la petición: -->  " + response.getStatus());
                 JSONObject json = new JSONObject(strJSON);
                 idProyecto = json.get("id").toString();
                 System.out.println("Id del proyecto --> " + idProyecto);
