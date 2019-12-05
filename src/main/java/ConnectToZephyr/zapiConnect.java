@@ -142,22 +142,21 @@ public class zapiConnect {
     }
 
     /**
-     * Método que permite obtener el Id del Diclo de JIRA que se esta invocando, pasándole por parámetro en nombre del Ciclo que ta está creado en Zephyr
+     * Método que permite obtener el id del ciclo de prueba que se pasa por parámetro en "nomCiclo" --> Nombre del ciclo en Jira
+     * Realiza petición GET /rest/zapi/latest/cycle?projectId={idProyecto}"&versionId={versionID}
      *
-     * @param idProyecto Este se obtiene gracias al método GetIDJiraProyect
-     * @param nomCiclo Este se pasa por parámetro como properties, sabiendo de antemano el nombre del ciclo creado,
-     *                 pero este ciclo debe estar contenido en "unreleasedVersions", específicamente en (Unscheduled/Sin programar)
-     *                 // TODO Este método debe ser refactorizado junto al método GetVersionIDJira, ya que dicho método sólo toma el id -1, el cual corresponde a "unreleasedVersions", específicamente en (Unscheduled/Sin programar)
-     * @param version Este se obtiene gracias al método GetVersionIDJira
-     * @return el Id del Ciclo ingresado por properties
+     * @param idProyecto Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
+     * @param nomCiclo Hay que entregarle por parámetro el NombreDelCiclo, el cual se puede ver o crear en JIRA
+     * @param versionID Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
+     * @return el IDCiclo, el cual es el ID asignado al ciclo de pruebas en JIRA que se consulta
      */
-    public static String GetCycleIDJira(String idProyecto, String nomCiclo, String version) {
+    public static String GetIDCycleJira(String idProyecto, String nomCiclo, String versionID) {
         String idCiclo = "";
         Response response;
 
         try {
             response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idProyecto + "&versionId=" + version)
+                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idProyecto + "&versionId=" + versionID)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
 
@@ -170,8 +169,6 @@ public class zapiConnect {
 
                 ObjectMapper mapper = new ObjectMapper();
 
-                // Recorro los Ids de Ciclo de los ciclos "unreleasedVersions", ya que el parámetro ingresado fue -1 (Unscheduled / Sin programar)
-                // Si le ingresaramos otro valor del version, recorrería los otros ciclos.
                 for(int i = 0; i < ArrayConIdsDeCiclo.length(); i++) {
                     if(!ArrayConIdsDeCiclo.getString(i).equals("recordsCount")) {
 
