@@ -82,14 +82,14 @@ public class zapiConnect {
 
     /**
      * Permite obtener el Id del release en el cual están hechas las pruebas --> Puede ser release o Unreleased
-     * y dentro de Release o Unreleased el nombre del Release
+     * y dentro de Release o Unreleased el nombre de la rama
      *
      * @param idProyecto Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
-     * @param ISRelease Hay que entregarle por parámetro si pertenece a Release o Unrelease, si es Release --> true, sino false
-     * @param nombreRelease Hay que proporcionarle el nombre del Release en el cual está creado el ciclo de pruebas
-     * @return versionID, el cual es el valor o ID asociado al proyecto creado
+     * @param ISRelease Hay que entregarle por parámetro si pertenece a Release o Unrelease, si es Release --> true, si es Unrelease --> false
+     * @param nombreRama Hay que proporcionarle el nombre de la Rama creada ya sea dentro de release (ISRElease-->true), o unreleased  (ISReleased-->false)
+     * @return versionID, el cual es el campoo "valor" o ID asociado al nombre de la Rama
      */
-    public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRelease) {
+    public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRama) {
 
         String versionID = "";
         String strJSON = "";
@@ -112,22 +112,22 @@ public class zapiConnect {
 
                     for (int i = 0; i < releasedVersions.length(); i++){
                         String contenidoUnrelease = releasedVersions.getJSONObject(i).get("label").toString().trim();
-                        System.out.println(contenidoUnrelease);
+                        //System.out.println(contenidoUnrelease);
 
-                        if (contenidoUnrelease.contains(nombreRelease)){
+                        if (contenidoUnrelease.contains(nombreRama)){
                             versionID = releasedVersions.getJSONObject(i).get("value").toString().trim();
                         }
                     }
 
                 } else {
                     JSONArray unreleasedVersions = json.getJSONArray("unreleasedVersions");
-                    System.out.println(unreleasedVersions);
+                    //System.out.println(unreleasedVersions);
 
                     for (int i = 0; i < unreleasedVersions.length(); i++){
                         String contenidoUnrelease = unreleasedVersions.getJSONObject(i).get("label").toString().trim();
                         //System.out.println(contenidoUnrelease);
 
-                        if (contenidoUnrelease.contains(nombreRelease)){
+                        if (contenidoUnrelease.contains(nombreRama)){
                             versionID = unreleasedVersions.getJSONObject(i).get("value").toString().trim();
                         }
                     }
