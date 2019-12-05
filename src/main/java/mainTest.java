@@ -3,16 +3,12 @@ import Utils.PropertiesManager;
 
 public class mainTest {
 
+    public static String keyProject = PropertiesManager.getDatoProperties("KEY_PROJECT");
+    public static String nombreRelease = PropertiesManager.getDatoProperties("NOMBRE_RELEASE");
+
     public static void main (String[] args) {
-        /*zapiConnect.GetIDJiraProyect(PropertiesManager.getDatoProperties("KEY_PROJECT_FIF"));*/
+        zapiConnect.GetIDJiraProyect(keyProject);
 
-        zapiConnect.GetVersionIDJira(
-                zapiConnect.GetIDJiraProyect(
-                        PropertiesManager.getDatoProperties("KEY_PROJECT_FIF")), false, PropertiesManager.getDatoProperties("NOMBRE_RELEASE"));
-        ;
-
-        /*zapiConnect.GetCycleIDJira(
-                zapiConnect.GetIDJiraProyect(PropertiesManager.getDatoProperties("KEY_PROJECT_FIF")), PropertiesManager.getDatoProperties("NOMBRE_CICLO_FIF"),
-                zapiConnect.GetVersionIDJira(zapiConnect.GetIDJiraProyect(PropertiesManager.getDatoProperties("KEY_PROJECT_FIF")), false));*/
+        zapiConnect.GetVersionIDJira(zapiConnect.GetIDJiraProyect(keyProject), false, nombreRelease);
     }
 }

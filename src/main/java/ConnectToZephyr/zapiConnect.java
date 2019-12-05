@@ -11,7 +11,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Logger;
 
 /**
  * Clase que permite interactuar con la API de Zephyr(ZAPI) y con la API de JIRA 8.5.0
@@ -21,9 +20,12 @@ import java.util.logging.Logger;
  */
 public class zapiConnect {
 
-    private static final Logger LOGGER = Logger.getLogger(String.valueOf(zapiConnect.class));
-    public static String urlBaseJIRA = PropertiesManager.getDatoProperties("URL_JIRA_FIF");
     public static Client clientJIRA;
+
+    public static String urlBaseJIRA = PropertiesManager.getDatoProperties("URL_JIRA");
+    public static String jiraUSER = PropertiesManager.getDatoProperties("JIRA_USER");
+    public static String jiraPass = PropertiesManager.getDatoProperties("JIRA_PASS");
+
 
     /**
      * Permite crear un cliente que se conecta a JIRA
@@ -31,24 +33,16 @@ public class zapiConnect {
      * @return Objeto del tipo Client, que posee la conexión a JIRA con sus credenciales
      */
     public static Client getClientJIRA() {
-
         //TODO Actualizar método para que funcione con las últimas librerías de Maven Central
-        LOGGER.info("Creando cliente JIRA");
-
         try {
             if (clientJIRA == null) {
-                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(
-                        PropertiesManager.getDatoProperties("JIRA_USER_FIF"),
-                        PropertiesManager.getDatoProperties("JIRA_PASS_FIF")
-                );
-
+                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(jiraUSER, jiraPass);
                 clientJIRA = ClientBuilder.newClient();
                 clientJIRA.register(feature);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return clientJIRA;
     }
 
@@ -78,8 +72,6 @@ public class zapiConnect {
                 JSONObject json = new JSONObject(strJSON);
                 idProyecto = json.get("id").toString();
                 System.out.println("Id del proyecto --> " + idProyecto);
-            } else {
-                LOGGER.warning("La respuesta del servidor es --> " + response.getStatus());
             }
         } catch (Exception e){
             System.out.println(e.getMessage());
@@ -97,7 +89,6 @@ public class zapiConnect {
      */
     public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRelease) {
 
-        String releaseOrUnrelease;
         String versionID = "";
         String strJSON = "";
         Response response;
@@ -112,26 +103,40 @@ public class zapiConnect {
 
             if(response.getStatus() == 200) {
                 JSONObject json = new JSONObject(strJSON);
-                JSONArray unreleasedVersions = json.getJSONArray("unreleasedVersions");
 
-                for(int i = 0; i < unreleasedVersions.length(); i++) {
-                    System.out.println(json.getJSONArray("unreleasedVersions").getJSONObject(i).get("label").toString());
+                if (ISRelease){
+                    JSONArray releasedVersions = json.getJSONArray("releasedVersions");
+                    System.out.println(releasedVersions);
 
-                    // TODO --> No está funcionado este if
-                    if(json.getJSONArray("unreleasedVersions").getJSONObject(i).get("label").toString().contains(nombreRelease)){
-                        System.out.println("hola");
-                    } else {
-                        System.out.println("chao");
+                    for (int i = 0; i < releasedVersions.length(); i++){
+                        String contenidoUnrelease = releasedVersions.getJSONObject(i).get("label").toString().trim();
+                        System.out.println(contenidoUnrelease);
+
+                        if (contenidoUnrelease.contains(nombreRelease)){
+                            versionID = releasedVersions.getJSONObject(i).get("value").toString().trim();
+                        }
+                    }
+
+                } else {
+                    JSONArray unreleasedVersions = json.getJSONArray("unreleasedVersions");
+                    System.out.println(unreleasedVersions);
+
+                    for (int i = 0; i < unreleasedVersions.length(); i++){
+                        String contenidoUnrelease = unreleasedVersions.getJSONObject(i).get("label").toString().trim();
+                        System.out.println(contenidoUnrelease);
+
+                        if (contenidoUnrelease.contains(nombreRelease)){
+                            versionID = unreleasedVersions.getJSONObject(i).get("value").toString().trim();
+                        }
                     }
                 }
-            }else {
-                System.out.println("No se ha encontrado la versión del proyecto id: " + idProyecto);
             }
+
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
 
-        System.out.println(versionID);
+        System.out.println("La versión es --> "+ versionID);
         return versionID;
     }
 
