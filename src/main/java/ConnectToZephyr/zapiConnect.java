@@ -11,6 +11,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 
 /**
  * Clase que permite interactuar con la API de Zephyr(ZAPI) y con la API de JIRA 8.5.0
@@ -53,7 +54,7 @@ public class zapiConnect {
      * @param claveProyectoEnJira Hay que pasarle por parámetro la Clave del proyecto en JIRA
      * @return Devuelve el ID del proyecto en JIRA (el cual es distinto a la KEY del proyecto)
      */
-    public static String GetIDJiraProyect(String claveProyectoEnJira) {
+    public static String getIDJiraProyect(String claveProyectoEnJira) {
 
         String idProyecto = "";
         String strJSON = "";
@@ -88,7 +89,7 @@ public class zapiConnect {
      * @param nombreRama Hay que proporcionarle el nombre de la Rama creada ya sea dentro de release (ISRElease-->true), o unreleased  (ISReleased-->false)
      * @return versionID, el cual es el campoo "valor" o ID asociado al nombre de la Rama
      */
-    public static String GetVersionIDJira(String idProyecto, boolean ISRelease, String nombreRama) {
+    public static String getVersionIDJira(String idProyecto, boolean ISRelease, String nombreRama) {
 
         String versionID = "";
         String strJSON = "";
@@ -149,7 +150,7 @@ public class zapiConnect {
      * @param versionID Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
      * @return el IDCiclo, el cual es el ID asignado al ciclo de pruebas en JIRA que se consulta
      */
-    public static String GetIDCycleJira(String idProyecto, String nomCiclo, String versionID) {
+    public static String getIDCycleJira(String idProyecto, String nomCiclo, String versionID) {
         String idCiclo = "";
         Response response;
 
@@ -164,13 +165,11 @@ public class zapiConnect {
             if(response.getStatus() == 200) {
                 JSONObject json = new JSONObject(strJSON);
                 JSONArray ArrayConIdsDeCiclo = json.names();
-                System.out.println(ArrayConIdsDeCiclo);
 
                 ObjectMapper mapper = new ObjectMapper();
 
                 for(int i = 0; i < ArrayConIdsDeCiclo.length(); i++) {
                     if(!ArrayConIdsDeCiclo.getString(i).equals("recordsCount")) {
-
                         JsonNode node = mapper.readTree(strJSON).path(ArrayConIdsDeCiclo.getString(i));
 
                         // node.get("name").toString().replaceAll("\"", "")  --> devuelve el nombre del ciclo
@@ -187,7 +186,77 @@ public class zapiConnect {
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
+
         System.out.println("Id de ciclo es --> "+ idCiclo + ", el cual se corresponde con el ciclo con nombre de ciclo --> " + nomCiclo);
         return idCiclo;
+    }
+
+    /**
+     * Método que permite obtener el ID del Issue, entendiendo que un Issue en JIRA es cualquier incidencia,
+     * en nuestro caso la incidencia sería el TEST_CASE
+     * Este método utiliza la petición GET /rest/api/2/issue/{issueIdOrKey} de la JIRA API 8.5.0
+     *
+     * @param claveTestCase Debemos pasar por parámetro el ID del Test-case que nos proporciona JIRA
+     * @return Retorna el id de dicho test-case
+     */
+    public static String getIDIssue(String claveTestCase){
+        String idIssue = "";
+        String strJSON = "";
+        Response response;
+
+        try {
+            response = zapiConnect.getClientJIRA().target(
+                    urlBaseJIRA + "/rest/api/2/issue/" + claveTestCase)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .get();
+
+            strJSON = response.readEntity(String.class);
+
+            if (response.getStatus() == 200) {
+                JSONObject json = new JSONObject(strJSON);
+                idIssue = json.get("id").toString();
+                System.out.println("Id del TestCase o Issue --> " + idIssue);
+            }
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return idIssue;
+    }
+
+    /**
+     * Método que permite obtener un ArrayList de tipo String con los pasos que debee poseer nuestro caso de prueba
+     * Usa petición GET /rest/zapi/latest/teststep/{isTestCase}?offset=0&limit=50
+     *
+     * @param isTestCase Recibe como parámetro el Id del test case o Id del Issue (ambos son lo mismo)
+     * @return Devuelve un ArrayList<String> el cual posee el Listado de los Pasos del Caso de Prueba
+     */
+    public static ArrayList<String>getListOfTestSteps(String isTestCase){
+
+        ArrayList<String> listOfTestSteps = new ArrayList<String>();
+        String strJSON = "";
+        Response response;
+
+        try {
+            response = zapiConnect.getClientJIRA().target(
+                    urlBaseJIRA + "/rest/zapi/latest/teststep/" + zapiConnect.getIDIssue(isTestCase) + "?offset=0&limit=50")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .get();
+
+            strJSON = response.readEntity(String.class);
+
+            if (response.getStatus() == 200) {
+                JSONObject json = new JSONObject(strJSON);
+                JSONArray collectionOFTestSteps = json.getJSONArray("stepBeanCollection");
+
+                for (int i = 0; i < collectionOFTestSteps.length(); i++){
+                    listOfTestSteps.add(collectionOFTestSteps.getJSONObject(i).get("step").toString().trim());
+                }
+
+            }
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println(listOfTestSteps);
+        return listOfTestSteps;
     }
 }
