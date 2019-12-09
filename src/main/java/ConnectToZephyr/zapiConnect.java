@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class zapiConnect {
      * @return Objeto del tipo Client, que posee la conexión a JIRA con sus credenciales
      */
     public static Client getClientJIRA() {
+
         //TODO Actualizar método para que funcione con las últimas librerías de Maven Central
         try {
             if (clientJIRA == null) {
@@ -81,15 +83,14 @@ public class zapiConnect {
     }
 
     /**
-     * Permite obtener el Id del release en el cual están hechas las pruebas --> Puede ser release o Unreleased
-     * y dentro de Release o Unreleased el nombre de la rama
+     * Permite obtener el ID de la rama, entregándole el id del Proyecto, luego si es release o no y finalmente el nombre de la rama
      *
-     * @param idProyecto Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
+     * @param idJiraProyect Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
      * @param ISRelease Hay que entregarle por parámetro si pertenece a Release o Unrelease, si es Release --> true, si es Unrelease --> false
      * @param nombreRama Hay que proporcionarle el nombre de la Rama creada ya sea dentro de release (ISRElease-->true), o unreleased  (ISReleased-->false)
-     * @return versionID, el cual es el campoo "valor" o ID asociado al nombre de la Rama
+     * @return versionID, el cual es el campo "valor" o ID asociado al nombre de la Rama
      */
-    public static String getVersionIDJira(String idProyecto, boolean ISRelease, String nombreRama) {
+    public static String getIDRamaJira(String idJiraProyect, boolean ISRelease, String nombreRama) {
 
         String versionID = "";
         String strJSON = "";
@@ -97,7 +98,7 @@ public class zapiConnect {
 
         try {
             response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/util/versionBoard-list?projectId=" + idProyecto)
+                    urlBaseJIRA + "/rest/zapi/latest/util/versionBoard-list?projectId=" + idJiraProyect)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
 
@@ -137,26 +138,26 @@ public class zapiConnect {
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("La versión es --> "+ versionID);
+        System.out.println("El id de la rama es --> "+ versionID);
         return versionID;
     }
 
     /**
-     * Método que permite obtener el id del ciclo de prueba que se pasa por parámetro en "nomCiclo" --> Nombre del ciclo en Jira
-     * Realiza petición GET /rest/zapi/latest/cycle?projectId={idProyecto}"&versionId={versionID}
+     * Método que permite obtener el id del ciclo de prueba que se pasa por parámetro en "nombreCicloJIRA" --> Nombre del ciclo en Jira
+     * Realiza petición GET /rest/zapi/latest/cycle?projectId={idJiraProject}"&versionId={IDRamaJira}
      *
-     * @param idProyecto Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
-     * @param nomCiclo Hay que entregarle por parámetro el NombreDelCiclo, el cual se puede ver o crear en JIRA
-     * @param versionID Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
+     * @param idJiraProject Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
+     * @param nombreCicloJIRA Hay que entregarle por parámetro el NombreDelCiclo, el cual se puede ver o crear en JIRA
+     * @param IDRamaJira Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
      * @return el IDCiclo, el cual es el ID asignado al ciclo de pruebas en JIRA que se consulta
      */
-    public static String getIDCycleJira(String idProyecto, String nomCiclo, String versionID) {
+    public static String getIDCycleJira(String idJiraProject, String nombreCicloJIRA, String IDRamaJira) {
         String idCiclo = "";
         Response response;
 
         try {
             response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idProyecto + "&versionId=" + versionID)
+                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idJiraProject + "&versionId=" + IDRamaJira)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
 
@@ -174,20 +175,20 @@ public class zapiConnect {
 
                         // node.get("name").toString().replaceAll("\"", "")  --> devuelve el nombre del ciclo
                         // Si el nombre del ciclo, coincide con el nombre del ciclo pasado por parámetro, entonces se asigna el id del ciclo que contiene ese nombre en su interior
-                        if(node.get("name").toString().replaceAll("\"", "").contains(nomCiclo)) {
+                        if(node.get("name").toString().replaceAll("\"", "").contains(nombreCicloJIRA)) {
                             idCiclo = ArrayConIdsDeCiclo.getString(i);
                             break;
                         }
                     }
                 }
             }else {
-                System.out.println("No se ha encontrado el ciclo: " + nomCiclo);
+                System.out.println("No se ha encontrado el ciclo: " + nombreCicloJIRA);
             }
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("Id de ciclo es --> "+ idCiclo + ", el cual se corresponde con el ciclo con nombre de ciclo --> " + nomCiclo);
+        System.out.println("Id de ciclo es --> "+ idCiclo + ", el cual se corresponde con el ciclo con nombre de ciclo --> " + nombreCicloJIRA);
         return idCiclo;
     }
 
@@ -199,7 +200,7 @@ public class zapiConnect {
      * @param claveTestCase Debemos pasar por parámetro el ID del Test-case que nos proporciona JIRA
      * @return Retorna el id de dicho test-case
      */
-    public static String getIDIssue(String claveTestCase){
+    public static String getIDTestCase(String claveTestCase){
         String idIssue = "";
         String strJSON = "";
         Response response;
@@ -225,12 +226,12 @@ public class zapiConnect {
 
     /**
      * Método que permite obtener un ArrayList de tipo String con los pasos que debee poseer nuestro caso de prueba
-     * Usa petición GET /rest/zapi/latest/teststep/{isTestCase}?offset=0&limit=50
+     * Usa petición GET /rest/zapi/latest/teststep/{IDTestCase}?offset=0&limit=50
      *
-     * @param isTestCase Recibe como parámetro el Id del test case o Id del Issue (ambos son lo mismo)
+     * @param IDTestCase Recibe como parámetro el Id del test case o Id del Issue (ambos son lo mismo)
      * @return Devuelve un ArrayList<String> el cual posee el Listado de los Pasos del Caso de Prueba
      */
-    public static ArrayList<String>getListOfTestSteps(String isTestCase){
+    public static ArrayList<String>getListOfTestSteps(String IDTestCase){
 
         ArrayList<String> listOfTestSteps = new ArrayList<String>();
         String strJSON = "";
@@ -238,7 +239,7 @@ public class zapiConnect {
 
         try {
             response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/teststep/" + zapiConnect.getIDIssue(isTestCase) + "?offset=0&limit=50")
+                    urlBaseJIRA + "/rest/zapi/latest/teststep/" + zapiConnect.getIDTestCase(IDTestCase) + "?offset=0&limit=50")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
 
@@ -258,5 +259,36 @@ public class zapiConnect {
         }
         System.out.println(listOfTestSteps);
         return listOfTestSteps;
+    }
+
+    public static String crearEjecucionJIRA(String idCiclo, String idIssue, String idProyecto, String version) {
+
+        Entity<?> payload;
+        Response response;
+        String idEjecucion = null, strJSON;
+
+        try {
+
+            payload = Entity.json("{ \"cycleId\": \"" + idCiclo + "\", \"issueId\": \"" + idIssue + "\" , \"projectId\" : " + idProyecto + "," +
+                    " \"versionId\": \"" + version + "\", \"assigneeType\": \"assignee\",  \"assignee\": \"jonathan.santos\" }");
+
+            response = zapiConnect.getClientJIRA().target(urlBaseJIRA + "/rest/zapi/latest/execution")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .post(payload);
+
+            strJSON = response.readEntity(String.class);
+
+            if(response.getStatus() == 200) {
+                JSONObject json = new JSONObject(strJSON);
+                JSONArray names = json.names();
+                idEjecucion = names.get(0).toString();
+            }else {
+                System.out.println("La instancia de ejecución no se ha creado correctamente");
+            }
+
+        }catch(Exception e) {
+            System.out.println("La ejecucion no se ha creado correctamente: " + e.getMessage());
+        }
+        return idEjecucion;
     }
 }

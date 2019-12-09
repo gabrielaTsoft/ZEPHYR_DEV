@@ -11,11 +11,11 @@ public class mainTest {
     public static void main (String[] args) {
         zapiConnect.getIDJiraProyect(keyProject);
 
-        zapiConnect.getVersionIDJira(zapiConnect.getIDJiraProyect(keyProject), false, nombreRama);
+        zapiConnect.getIDRamaJira(zapiConnect.getIDJiraProyect(keyProject), false, nombreRama);
 
-        zapiConnect.getIDCycleJira(zapiConnect.getIDJiraProyect(keyProject),nombreCiclo,zapiConnect.getVersionIDJira(zapiConnect.getIDJiraProyect(keyProject), false, nombreRama));
+        zapiConnect.getIDCycleJira(zapiConnect.getIDJiraProyect(keyProject),nombreCiclo,zapiConnect.getIDRamaJira(zapiConnect.getIDJiraProyect(keyProject), false, nombreRama));
 
-        zapiConnect.getIDIssue(idTestCase);
+        zapiConnect.getIDTestCase(idTestCase);
 
         zapiConnect.getListOfTestSteps(idTestCase);
     }
