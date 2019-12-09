@@ -50,9 +50,10 @@ public class zapiConnect {
     }
 
     /**
-     * Método que utiliza la petición GET /rest/api/2/project/{projectIdOrKey}.
+     * Método que utiliza la petición GET /rest/api/2/project/{projectIdOrKey}  --> desde la API de JJIRA
      * Se obtiene la respuesta en formato JSON, luego se descompone el JSon para obtener sólo el ID del Proyecto
      * y almacenarlo en la variable IDProyecto
+     *
      * @param claveProyectoEnJira Hay que pasarle por parámetro la Clave del proyecto en JIRA
      * @return Devuelve el ID del proyecto en JIRA (el cual es distinto a la KEY del proyecto)
      */
@@ -90,7 +91,7 @@ public class zapiConnect {
      * @param nombreRama Hay que proporcionarle el nombre de la Rama creada ya sea dentro de release (ISRElease-->true), o unreleased  (ISReleased-->false)
      * @return versionID, el cual es el campo "valor" o ID asociado al nombre de la Rama
      */
-    public static String getIDRamaJira(String idJiraProyect, boolean ISRelease, String nombreRama) {
+    public static String getIDVersionJira(String idJiraProyect, boolean ISRelease, String nombreRama) {
 
         String versionID = "";
         String strJSON = "";
@@ -144,20 +145,20 @@ public class zapiConnect {
 
     /**
      * Método que permite obtener el id del ciclo de prueba que se pasa por parámetro en "nombreCicloJIRA" --> Nombre del ciclo en Jira
-     * Realiza petición GET /rest/zapi/latest/cycle?projectId={idJiraProject}"&versionId={IDRamaJira}
+     * Realiza petición GET /rest/zapi/latest/cycle?projectId={idJiraProject}"&versionId={IDVersionJira}
      *
      * @param idJiraProject Recibe el id del proyecto, el cual se puede obtener a través de GET /rest/api/2/project/{projectIdOrKey}
      * @param nombreCicloJIRA Hay que entregarle por parámetro el NombreDelCiclo, el cual se puede ver o crear en JIRA
-     * @param IDRamaJira Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
+     * @param IDVersionJira Recibe el versiónID, a través del método GET /rest/zapi/latest/util/versionBoard-list?projectId={IdDelProyecto}
      * @return el IDCiclo, el cual es el ID asignado al ciclo de pruebas en JIRA que se consulta
      */
-    public static String getIDCycleJira(String idJiraProject, String nombreCicloJIRA, String IDRamaJira) {
+    public static String getIDCycleJira(String idJiraProject, String nombreCicloJIRA, String IDVersionJira) {
         String idCiclo = "";
         Response response;
 
         try {
             response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idJiraProject + "&versionId=" + IDRamaJira)
+                    urlBaseJIRA + "/rest/zapi/latest/cycle?projectId=" + idJiraProject + "&versionId=" + IDVersionJira)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
 
@@ -261,34 +262,32 @@ public class zapiConnect {
         return listOfTestSteps;
     }
 
-    public static String crearEjecucionJIRA(String idCiclo, String idIssue, String idProyecto, String version) {
-
+    /**
+     * Método POST que permite generar una nuevo Ciclo en JIRA
+     * LLama al mñetodo POST de ZAPI  POST --> Create New Cycle --> /rest/zapi/latest/cycle
+     *
+     * @param nombreDelCiclo Le damos el nombre que queremos que tenga el ciclo
+     * @param idJiraProyect Pasamos por parámetro el ID del proyecto en JIJRA
+     * @param IDVersionJira Pasamos por parámetro el ID de la versión en la cual queremos que se cree nuestro ciclo
+     * @param description Le damos la descripción que deseemos a nuestro nuevo ciclo.
+     */
+    public static void createNewCycle(String nombreDelCiclo, String idJiraProyect, String IDVersionJira, String description) {
         Entity<?> payload;
         Response response;
-        String idEjecucion = null, strJSON;
 
         try {
+            payload = Entity.json("{  \"clonedCycleId\": \"\",  \"name\": \""+ nombreDelCiclo +"\", " +
+                    "\"build\": \"\",  \"environment\": \"\",  \"description\": \""+ description +"\",  " +
+                    "\"startDate\": \"4/Dec/19\", \"endDate\": \"30/Dec/19\",  " +
+                    "\"projectId\": \""+ idJiraProyect +"\",  \"versionId\": \""+ IDVersionJira +"\",  \"sprintId\": 1}");
 
-            payload = Entity.json("{ \"cycleId\": \"" + idCiclo + "\", \"issueId\": \"" + idIssue + "\" , \"projectId\" : " + idProyecto + "," +
-                    " \"versionId\": \"" + version + "\", \"assigneeType\": \"assignee\",  \"assignee\": \"jonathan.santos\" }");
-
-            response = zapiConnect.getClientJIRA().target(urlBaseJIRA + "/rest/zapi/latest/execution")
+            response = zapiConnect.getClientJIRA().target(
+                    urlBaseJIRA + "/rest/zapi/latest/cycle")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .post(payload);
 
-            strJSON = response.readEntity(String.class);
-
-            if(response.getStatus() == 200) {
-                JSONObject json = new JSONObject(strJSON);
-                JSONArray names = json.names();
-                idEjecucion = names.get(0).toString();
-            }else {
-                System.out.println("La instancia de ejecución no se ha creado correctamente");
-            }
-
         }catch(Exception e) {
-            System.out.println("La ejecucion no se ha creado correctamente: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
-        return idEjecucion;
     }
 }
