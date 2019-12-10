@@ -264,7 +264,7 @@ public class zapiConnect {
 
     /**
      * Método POST que permite generar una nuevo Ciclo en JIRA
-     * LLama al mñetodo POST de ZAPI  POST --> Create New Cycle --> /rest/zapi/latest/cycle
+     * LLama al metodo POST de ZAPI --> Create New Cycle --> /rest/zapi/latest/cycle
      *
      * @param nombreDelCiclo Le damos el nombre que queremos que tenga el ciclo
      * @param idJiraProyect Pasamos por parámetro el ID del proyecto en JIJRA
@@ -276,15 +276,58 @@ public class zapiConnect {
         Response response;
 
         try {
-            payload = Entity.json("{  \"clonedCycleId\": \"\",  \"name\": \""+ nombreDelCiclo +"\", " +
-                    "\"build\": \"\",  \"environment\": \"\",  \"description\": \""+ description +"\",  " +
-                    "\"startDate\": \"4/Dec/19\", \"endDate\": \"30/Dec/19\",  " +
-                    "\"projectId\": \""+ idJiraProyect +"\",  \"versionId\": \""+ IDVersionJira +"\",  \"sprintId\": 1}");
+            payload = Entity.json(
+                    "{  " +
+                            "\"clonedCycleId\": \"\",  " +
+                            "\"name\": \"" + nombreDelCiclo + "\", " +
+                            "\"build\": \"\",  " +
+                            "\"environment\": \"\",  " +
+                            "\"description\": \"" + description + "\",  " +
+                            "\"startDate\": \"4/Dec/19\", " +
+                            "\"endDate\": \"30/Dec/19\",  " +
+                            "\"projectId\": \""+ idJiraProyect +"\",  " +
+                            "\"versionId\": \""+ IDVersionJira +"\",  " +
+                            "\"sprintId\": 1}");
 
             response = zapiConnect.getClientJIRA().target(
                     urlBaseJIRA + "/rest/zapi/latest/cycle")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .post(payload);
+
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Metodo PUT que permite actualizar un ciclo creado en JIRA
+     * LLama al metodo PUT de ZAPI --> Update Cycle Information --> /rest/zapi/latest/cycle
+     *
+     * @param IDCycle Paso por parametro el Id del Ciclo que quiero actualizar, este lo obtengo con metodo getIDCycleJira
+     * @param nuevoNombreDelCiclo Le doy por ejemplo un nuevo nombre, pero puedo parametrizar cualquier otro campo
+     * @param IDVersionJIRA Debo darle el ID de la version en JIRA
+     */
+    public static void updateCycle(String IDCycle, String nuevoNombreDelCiclo, String IDVersionJIRA) {
+        Entity<?> payload;
+        Response response;
+
+        try {
+            payload = Entity.json(
+                    "{  " +
+                            "\"id\": \"" + IDCycle + "\", " +
+                            "\"name\": \"" + nuevoNombreDelCiclo + "\", " +
+                            "\"build\": \"Update Build\",  " +
+                            "\"environment\": \"Update Environment\",  " +
+                            "\"description\": \"Actualizacion de la descripcion\",  " +
+                            "\"startDate\": \"4/Dec/19\", " +
+                            "\"endDate\": \"30/Dec/19\",  " +
+                            "\"versionId\": \""+ IDVersionJIRA +"\",  " +
+                            "\"folderId\": \"\"}");
+
+            response = zapiConnect.getClientJIRA().target(
+                    urlBaseJIRA + "/rest/zapi/latest/cycle")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(payload);
 
         }catch(Exception e) {
             System.out.println(e.getMessage());
