@@ -12,7 +12,7 @@ public class mainTest {
 
     public static void main (String[] args) {
 
-        getIDJiraProyect(keyProject);
+        /*getIDJiraProyect(keyProject);
         getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion);
         getIDCycleJira(getIDJiraProyect(keyProject),nombreCiclo, getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));
 
@@ -30,6 +30,8 @@ public class mainTest {
         updateCycle(
                 getIDCycleJira(getIDJiraProyect(keyProject), nombreCiclo, getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion)),
                 nombreCiclo,
-                getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));
+                getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));*/
+
+        addAttachment("6", "execution");
     }
 }

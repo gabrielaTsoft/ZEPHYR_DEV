@@ -333,4 +333,33 @@ public class zapiConnect {
             System.out.println(e.getMessage());
         }
     }
+
+    // Move Executions to Cycle  --> OJO con este método, al parecer se ejecuta la prueba y luego se mueve hacia el ciclo de ejecución
+    // Copy Executions to Cycle  --> Método relacionado con el anterior
+    // Get the list of folder for a cycle   --> También hay métodos que piden el folder bajo un ciclo.
+    // Get list of Step Result --> Get List of Step Result by Execution Id
+    // Get StepResult Information --> Get Single Step Result Information by StepResult Id
+
+    // MÉTODOS DE UTILRESOURCE son importantes, ya que nos dan información respecto a tablas que clasifican los datos
+    // Get Cycle Criteria Info  --> Da información importantísima respecto a executionStatuses, issueStatuses, priorities
+
+    // Para obtener datos --> Get Execution Statuses, Priorities, Components, Labels
+
+
+    public static void addAttachment(String entityID, String entityType) {
+        Entity<?> payload;
+        Response response;
+
+        try {
+            payload = Entity.text("C:Screenshot_1.png");
+
+            response = zapiConnect.getClientJIRA().target(
+                    urlBaseJIRA + "/rest/zapi/latest/attachment?entityId="+ entityID +"&entityType=" + entityType)
+                    .request(MediaType.MULTIPART_FORM_DATA)
+                    .post(payload);
+
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
