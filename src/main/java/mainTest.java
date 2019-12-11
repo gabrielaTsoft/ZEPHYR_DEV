@@ -1,5 +1,7 @@
-import ConnectToZephyr.zapiConnect;
 import Utils.PropertiesManager;
+
+import java.io.File;
+import java.io.IOException;
 
 import static ConnectToZephyr.zapiConnect.*;
 
@@ -10,9 +12,9 @@ public class mainTest {
     public static String nombreCiclo = PropertiesManager.getDatoProperties("NOMBRE_CICLO");
     public static String idTestCase = PropertiesManager.getDatoProperties("NOMBRE_ID_TEST_CASE");
 
-    public static void main (String[] args) {
+    public static void main (String[] args) throws IOException {
 
-        /*getIDJiraProyect(keyProject);
+        getIDJiraProyect(keyProject);
         getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion);
         getIDCycleJira(getIDJiraProyect(keyProject),nombreCiclo, getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));
 
@@ -30,8 +32,10 @@ public class mainTest {
         updateCycle(
                 getIDCycleJira(getIDJiraProyect(keyProject), nombreCiclo, getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion)),
                 nombreCiclo,
-                getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));*/
+                getIDVersionJira(getIDJiraProyect(keyProject), false, nombreVersion));
 
-        addAttachment("6", "execution");
+        // Método que permite insertar un archivo al step result
+        File file = new File("C://jpg.jpg");
+        addAttachment(file,"4", "stepresult");
     }
 }

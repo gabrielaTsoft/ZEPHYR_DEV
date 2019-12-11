@@ -7,11 +7,23 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,6 +39,8 @@ public class zapiConnect {
     public static String urlBaseJIRA = PropertiesManager.getDatoProperties("URL_JIRA");
     public static String jiraUSER = PropertiesManager.getDatoProperties("JIRA_USER");
     public static String jiraPass = PropertiesManager.getDatoProperties("JIRA_PASS");
+    private static final String CREDENTIALS = PropertiesManager.getDatoProperties("JIRA_USER") + ":"
+            + PropertiesManager.getDatoProperties("JIRA_PASS");
 
 
     /**
@@ -345,21 +359,36 @@ public class zapiConnect {
 
     // Para obtener datos --> Get Execution Statuses, Priorities, Components, Labels
 
+    public static void addAttachment(File fileToUpload, String executionId, String entityType) throws RuntimeException, IOException {
+        // set up proxy for http client
+        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+        clientBuilder.useSystemProperties();
+        CloseableHttpClient httpClient = clientBuilder.build();
 
-    public static void addAttachment(String entityID, String entityType) {
-        Entity<?> payload;
-        Response response;
+        HttpPost httpPost = new HttpPost(
+                urlBaseJIRA + "/rest/zapi/latest/attachment?entityId=" + executionId + "&entityType=" +  entityType);
+        httpPost.setHeader(
+                "X-Atlassian-Token", "nocheck");
 
-        try {
-            payload = Entity.text("C:Screenshot_1.png");
+        if (!CREDENTIALS.isEmpty()) {
+            String encoding = new Base64().encodeToString(CREDENTIALS.getBytes());
+            httpPost.setHeader("Authorization", "Basic " + encoding);
+        }
 
-            response = zapiConnect.getClientJIRA().target(
-                    urlBaseJIRA + "/rest/zapi/latest/attachment?entityId="+ entityID +"&entityType=" + entityType)
-                    .request(MediaType.MULTIPART_FORM_DATA)
-                    .post(payload);
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.addBinaryBody("file", fileToUpload, ContentType.APPLICATION_OCTET_STREAM, fileToUpload.getName());
+        HttpEntity multipart = builder.build();
+        httpPost.setEntity(multipart);
 
-        }catch(Exception e) {
-            System.out.println(e.getMessage());
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        HttpEntity responseEntity = response.getEntity();
+        if (responseEntity != null) {
+            EntityUtils.consume(responseEntity);
+        }
+
+        // ensure file was uploaded correctly
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Error uploading file");
         }
     }
 }
