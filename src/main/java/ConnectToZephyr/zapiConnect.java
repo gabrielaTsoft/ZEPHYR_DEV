@@ -28,8 +28,8 @@ import java.util.ArrayList;
 
 /**
  * Clase que permite interactuar con la API de Zephyr(ZAPI) y con la API de JIRA 8.5.0
- * @author Alejandro Contreras (Adaptación de trabajo realizado por Hector Castillo)
- * @Date 04/12/2019
+ *
+ * @Date 04/12/2019 - 12/12/2019
  * @version 1.0
  */
 public class zapiConnect {
@@ -49,7 +49,6 @@ public class zapiConnect {
      * @return Objeto del tipo Client, que posee la conexión a JIRA con sus credenciales
      */
     public static Client getClientJIRA() {
-
         //TODO Actualizar método para que funcione con las últimas librerías de Maven Central
         try {
             if (clientJIRA == null) {
@@ -246,7 +245,7 @@ public class zapiConnect {
      * @param IDTestCase Recibe como parámetro el Id del test case o Id del Issue (ambos son lo mismo)
      * @return Devuelve un ArrayList<String> el cual posee el Listado de los Pasos del Caso de Prueba
      */
-    public static ArrayList<String>getListOfTestSteps(String IDTestCase){
+    public static ArrayList<String> getListOfTestSteps(String IDTestCase){
 
         ArrayList<String> listOfTestSteps = new ArrayList<String>();
         String strJSON = "";

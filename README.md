@@ -1,9 +1,11 @@
-**PROYECTO PARA FALABELLA SAT - AUTOMATIZACIÓN**
+**FALABELLA SAT - CORE AUTOMATIZACIÓN**
 
-Este proyecto permite interactuar con:
+Proyecto que interactúa con la API de JIRA y Zephyr:
 
 * API de ZEPHYR
     * https://getzephyr.docs.apiary.io
 * API DE JIRA
     * https://docs.atlassian.com/software/jira/docs/api/REST/8.5.0/
+       
+El objetivo del proyecto es 
     
