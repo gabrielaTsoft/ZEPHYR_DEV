@@ -1,5 +1,4 @@
-**FALABELLA SAT - CORE AUTOMATION**
-----
+# **FALABELLA SAT - CORE AUTOMATION**
 
 Proyecto que interactúa con la API de JIRA y Zephyr:
 
