@@ -359,14 +359,24 @@ public class zapiConnect {
 
     // Para obtener datos --> Get Execution Statuses, Priorities, Components, Labels
 
-    public static void addAttachment(File fileToUpload, String executionId, String entityType) throws RuntimeException, IOException {
+    /**
+     * Permite agregar un attachment, ya sea a un step result o a un execution
+     * Método POST --> /rest/zapi/latest/attachment?entityId={entityID}&entityType={entityType}
+     *
+     * @param fileToUpload Le pasamos el archivo que deseamos subir
+     * @param entityType Le decimos que tipo de entidad queremos subir  ---> Puede ser stepresult o execution
+     * @param entityId De acuerdo al tipo de entidad, le damos el id ya sea del execution o del stepresult
+     * @throws RuntimeException En caso de error en RunTime
+     * @throws IOException En caso de error con el archivo
+     */
+    public static void addAttachment(File fileToUpload, String entityType, String entityId) throws RuntimeException, IOException {
         // set up proxy for http client
         HttpClientBuilder clientBuilder = HttpClientBuilder.create();
         clientBuilder.useSystemProperties();
         CloseableHttpClient httpClient = clientBuilder.build();
 
         HttpPost httpPost = new HttpPost(
-                urlBaseJIRA + "/rest/zapi/latest/attachment?entityId=" + executionId + "&entityType=" +  entityType);
+                urlBaseJIRA + "/rest/zapi/latest/attachment?entityId=" + entityId + "&entityType=" +  entityType);
         httpPost.setHeader(
                 "X-Atlassian-Token", "nocheck");
 
@@ -388,7 +398,7 @@ public class zapiConnect {
 
         // ensure file was uploaded correctly
         if (response.getStatusLine().getStatusCode() != 200) {
-            throw new RuntimeException("Error uploading file");
+            throw new RuntimeException("Error al subir el archivo");
         }
     }
 }

@@ -36,6 +36,6 @@ public class mainTest {
 
         // Método que permite insertar un archivo al step result
         File file = new File("C://jpg.jpg");
-        addAttachment(file,"4", "stepresult");
+        addAttachment(file,"stepresult", "4");
     }
 }
